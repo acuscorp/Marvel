@@ -1,10 +1,10 @@
 package com.acuscorp.marvel;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.acuscorp.marvel.Models.Result;
+import com.acuscorp.marvel.Models.Thumbnail;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -29,7 +30,9 @@ public class MainActivity extends AppCompatActivity {
     private Api api;
     private ServiceGenerator serviceGenerator = ServiceGenerator.getInstance();
     private LinearLayoutManager layoutManager;
-    LiveData<List<Result>> results;
+    private LiveData<List<Result>> results;
+    private int heroId ;
+    private String heroUrl;
 
 
     //---------------------
@@ -82,67 +85,27 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setAdapter(heroAdapter);
         recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
 
-        heroAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
-            @Override
-            public void onItemClick(Result result) {
-                Toast.makeText(MainActivity.this, "id: "+result.getId(), Toast.LENGTH_SHORT).show();
-            }
-        });
+        onItemClickListener();
         currentPage=1;
 
         marvelViewModel.setResults(OFFSET*(currentPage-1));
     }
-//
-//    public void getImage () {
-//        isLoading = true;
-//
-//        currentPage += 1;
-//
-//
-//        Map<String, String> parameters = new HashMap<>();
-//        parameters.put("limit", "" + PAGE_SIZE*currentPage);
-//        parameters.put("ts", TIMESTAMP);
-//        parameters.put("apikey", API_KEY);
-//        parameters.put("hash", HASH);
-//        parameters.put("offset",OFFSET*(currentPage-1)+"");
-//
-//        serviceGenerator.getApi().getHero(parameters).enqueue(new Callback<Marvel>() {
-//            @Override
-//            public void onResponse(Call<Marvel> call, retrofit2.Response<Marvel> response) {
-//                isLoading = false;
-//                progressBar.setVisibility(ProgressBar.GONE);
-//                if (!response.isSuccessful()) {
-//                    int responseCode = response.code();
-//                    if(responseCode != 200) { // 504 Unsatisfiable Request (only-if-cached)
-//
-//                        Toast.makeText(MainActivity.this, "There is no connection", Toast.LENGTH_SHORT).show();
-//                    }
-//                    return;
-//                }
-//                Marvel getData = response.body();
-//                if(getData!=null){
-//                    Data data = getData.getData();
-//
-//
-//                    results.addAll(data.getResults().subList(PAGE_SIZE*(currentPage-1),data.getResults().size()));
-//                    heroAdapter.submitList(results);
-//                    heroAdapter.notifyDataSetChanged();
-//                    layoutManager.scrollToPositionWithOffset(PAGE_SIZE*(currentPage-1), 20);
-//                    if (results.size() < PAGE_SIZE) {
-//                        isLastPage = true;
-//
-//                    }
-//                }
-//            }
-//
-//            @Override
-//            public void onFailure(Call<Marvel> call, Throwable t) {
-//                Log.d(TAG, "onFailure: ");
-//            }
-//        });
-//
-//
-//    }
+
+    private void onItemClickListener() {
+        heroAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
+            @Override
+            public void onItemClick(Result result) {
+
+                String heroUrl   =  result.getThumbnail().getPath()+"/portrait_xlarge."+result.getThumbnail().getExtension();
+
+                Intent intent = new Intent(MainActivity.this,DetailsActivity.class);
+                intent.putExtra(DetailsActivity.EXTRA_HERO_ID, result.getId());
+                intent.putExtra(DetailsActivity.EXTRA_HERO_DESCRIPTION,result.getDescription());
+                intent.putExtra(DetailsActivity.EXTRA_HERO_URL,heroUrl);
+                startActivity(intent);
+            }
+        });
+    }
 
     private RecyclerView.OnScrollListener recyclerViewOnScrollListener = new RecyclerView.OnScrollListener() {
         @Override
