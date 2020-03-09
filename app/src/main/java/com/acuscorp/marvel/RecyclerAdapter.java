@@ -13,11 +13,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.Models.Thumbnail;
-import com.squareup.picasso.Picasso;
+import com.bumptech.glide.RequestManager;
 
-public class MainAdapter extends ListAdapter<Result, MainAdapter.MainHolder> {
-    public MainAdapter() {
+public class RecyclerAdapter extends ListAdapter<Result, RecyclerAdapter.MainHolder> {
+    private RequestManager requestManager;
+
+    public RecyclerAdapter(RequestManager requestManager) {
         super(DIFF_CALLBACK);
+        this.requestManager = requestManager;
 
     }
     private static final DiffUtil.ItemCallback<Result> DIFF_CALLBACK = new DiffUtil.ItemCallback<Result>() {
@@ -31,7 +34,7 @@ public class MainAdapter extends ListAdapter<Result, MainAdapter.MainHolder> {
         public boolean areContentsTheSame(@NonNull Result oldItem, @NonNull Result newItem) {
             return oldItem.getId().equals(newItem.getId()) &&
                     oldItem.getDescription().equals(newItem.getDescription()) &&
-                    oldItem.getName() == newItem.getName();
+                    oldItem.getName().contains(newItem.getName()) ;
         }
     };
 
@@ -43,35 +46,36 @@ public class MainAdapter extends ListAdapter<Result, MainAdapter.MainHolder> {
         View itemView = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.cardview_item,parent,false);
 
-        return new MainHolder(itemView);
+        return new MainHolder(itemView,requestManager);
     }
 
     @Override
     public void onBindViewHolder(@NonNull MainHolder holder, int position) {
-        Result currentHero = getItem(position);
-        Thumbnail url = currentHero.getThumbnail();
-//        String heroUrl = "http://x.annihil.us/u/prod/marvel/i/mg/3/40/4bb4680432f73/portrait_xlarge.jpg";
-        String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
-//           String heroUrl   =  url.getPath()+"/portrait_xlarge."+url.getExtension();
-        String heroName = currentHero.getName();
-        holder.mHeroName.setText(heroName);
 
-        Picasso.get().load(heroUrl)
-                .placeholder(R.mipmap.ic_launcher)
-                .fit()
-                .centerInside()
-                .into(holder.mHeroImage);
+        holder.bind(getItem(position));
+//        Result currentHero = getItem(position);
+//        Thumbnail url = currentHero.getThumbnail();
+////        String heroUrl = "http://x.annihil.us/u/prod/marvel/i/mg/3/40/4bb4680432f73/portrait_xlarge.jpg";
+//        String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
+////           String heroUrl   =  url.getPath()+"/portrait_xlarge."+url.getExtension();
+//        String heroName = currentHero.getName();
+//        holder.mHeroName.setText(heroName);
+
+
     }
 
 
 
+
     class MainHolder extends RecyclerView.ViewHolder{
+        private RequestManager requestManager;
         private ImageView mHeroImage;
         private TextView mHeroName;
-        public MainHolder(@NonNull View itemView) {
+        public MainHolder(@NonNull View itemView,RequestManager requestManager) {
             super(itemView);
             mHeroImage = itemView.findViewById(R.id.iv_hero_image);
             mHeroName = itemView.findViewById(R.id.tv_hero_name);
+            this.requestManager = requestManager;
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -84,6 +88,19 @@ public class MainAdapter extends ListAdapter<Result, MainAdapter.MainHolder> {
                 }
             });
 
+
+        }
+        public void bind(Result result){
+
+            Thumbnail url = result.getThumbnail();
+            String heroName = result.getName();
+            String heroUrl2   =  url.getPath()+"/portrait_xlarge."+url.getExtension();
+            String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
+            requestManager
+                    .load(heroUrl)
+                    .fitCenter()
+                    .into(mHeroImage);
+            mHeroName.setText(heroName);
         }
     }
 

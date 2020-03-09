@@ -8,11 +8,15 @@ import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.QueryMap;
 
 
-public interface JsonPlaceHolderApi {
+public interface Api {
     @GET("v1/public/characters")
     Call<Marvel> getHero(@QueryMap Map<String,String> parameters);
-//    Call<List<JsonObject>> getHero(@QueryMap Map<String,String> parameters);
+    @GET("photos/{id}")
+    Call<Marvel> searchPhoto(
+            @Path("id") String id
+    );
 }
