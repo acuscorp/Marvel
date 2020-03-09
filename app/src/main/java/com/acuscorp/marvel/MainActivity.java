@@ -8,26 +8,17 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.acuscorp.marvel.Models.Data;
-import com.acuscorp.marvel.Models.Marvel;
 import com.acuscorp.marvel.Models.Result;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -65,6 +56,9 @@ public class MainActivity extends AppCompatActivity {
                     public void onChanged(List<Result> results) {
                         progressBar.setVisibility(ProgressBar.INVISIBLE);
                         heroAdapter.submitList(results);
+                        heroAdapter.notifyDataSetChanged();
+                        isLoading=false;
+                        isLastPage=false;
 
                     }
                 });
@@ -96,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         });
         currentPage=1;
 
-        marvelViewModel.setResultados(OFFSET*(currentPage-1),PAGE_SIZE*currentPage,currentPage);
+        marvelViewModel.setResults(OFFSET*(currentPage-1));
     }
 //
 //    public void getImage () {
@@ -159,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "onScrollStateChanged: position "+ position);
             }
         }
-        int sizeList=0;
+
         @Override
         public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
@@ -168,20 +162,21 @@ public class MainActivity extends AppCompatActivity {
             int visibleItemCount = layoutManager.getChildCount();
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+            if (heroAdapter.getItemCount() < PAGE_SIZE) {
+                isLastPage = true;
 
+            }
             if (!isLoading && !isLastPage) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
-                        && totalItemCount >= PAGE_SIZE) {
-                    progressBar.setVisibility(ProgressBar.VISIBLE);
-                    try {
-                        Thread.sleep(2000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                        && totalItemCount >= PAGE_SIZE)
+                {
+                    isLoading=true;
                     currentPage++;
 
-                    marvelViewModel.setResultados(OFFSET*(currentPage-1),PAGE_SIZE*currentPage,currentPage);
+                    marvelViewModel.setResults(OFFSET*(currentPage-1));
+                    progressBar.setVisibility(ProgressBar.VISIBLE);
+
 
 
                 }

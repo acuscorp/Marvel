@@ -22,26 +22,28 @@ import retrofit2.Callback;
 
 public class Repository {
     private static final String TAG = "Repository";
-    public static List<Result> results ;
+    private static List<Result> results = new ArrayList<>() ;
     private static MutableLiveData<List<Result>> resM ;
     private static String API_KEY = "d3b14f7f4734066b3d557fac768e496c";
     private static String HASH = "a64c0f47edffb941b376d27e6149d464";
     private static String TIMESTAMP = "9";
-    private static int PAGE_SIZE;
+    private static final int PAGE_SIZE=10;
     private static int OFFSET;
 
 
     private static ServiceGenerator serviceGenerator;
 
-    public static void getResults(int offset, int limit, int cPage){
+    public static void getResults(int offset ){
         OFFSET = offset;
-        PAGE_SIZE =limit;
         getImage();
     }
 
+    public static List<Result> getResults() {
+        return results;
+    }
 
     public static void getImage () {
-        results = new ArrayList<>();
+
         Map<String, String> parameters = new HashMap<>();
         parameters.put("limit", "" + PAGE_SIZE);
         parameters.put("ts", TIMESTAMP);
@@ -66,7 +68,7 @@ public class Repository {
                     Data data = getData.getData();
 
 
-                    results.addAll(data.getResults().subList(OFFSET,data.getResults().size()));
+                    results.addAll(data.getResults());
 
                 }
             }

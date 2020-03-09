@@ -2,6 +2,7 @@ package com.acuscorp.marvel;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.widget.ListAdapter;
 
 import androidx.lifecycle.AndroidViewModel;
@@ -14,8 +15,10 @@ import com.acuscorp.marvel.Models.Result;
 
 import java.util.List;
 
-public class MarvelViewModel extends ViewModel {
 
+
+public class MarvelViewModel extends ViewModel {
+    private static final String TAG = "MarvelViewModel";
     MutableLiveData<List<Result>> resultados;
     int size = 0;
 
@@ -31,18 +34,18 @@ public class MarvelViewModel extends ViewModel {
     public LiveData<List<Result>> getResults(){
         return resultados;
     }
-    public void setResultados(int offset, int limit, int currentPage){
-        Repository.getResults(offset,limit, currentPage);
+    public void setResults(int offset){
+        Repository.getResults(offset);
         final Handler hdlk = new Handler();
         new Thread(new Runnable() {
             @Override
             public void run() {
-                size = Repository.results.size();
+                size = Repository.getResults().size();
                 long counter=0;
 
-                while (Repository.results.size()<=size && counter<30){
+                while (Repository.getResults().size()<=size && counter<5){
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1000);
                         counter++;
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -51,10 +54,12 @@ public class MarvelViewModel extends ViewModel {
 
 
 
+
                 hdlk.post(new Runnable() {
                     @Override
                     public void run() {
-                        resultados.setValue(Repository.results);
+                        resultados.setValue(Repository.getResults());
+                        Log.d(TAG, "run: There has no beeing any result");
 
                     }
                 });
