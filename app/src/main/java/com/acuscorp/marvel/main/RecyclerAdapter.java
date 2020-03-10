@@ -54,13 +54,6 @@ public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.mai
     public void onBindViewHolder(@NonNull MainHolder holder, int position) {
 
         holder.bind(getItem(position));
-//        Result currentHero = getItem(position);
-//        Thumbnail url = currentHero.getThumbnail();
-////        String heroUrl = "http://x.annihil.us/u/prod/marvel/i/mg/3/40/4bb4680432f73/portrait_xlarge.jpg";
-//        String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
-////           String heroUrl   =  url.getPath()+"/portrait_xlarge."+url.getExtension();
-//        String heroName = currentHero.getName();
-//        holder.mHeroName.setText(heroName);
 
 
     }

@@ -77,7 +77,7 @@ public class DetailsActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
         Display display = getWindowManager().getDefaultDisplay();
-        
+
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
