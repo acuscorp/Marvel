@@ -1,10 +1,9 @@
-package com.acuscorp.marvel;
+package com.acuscorp.marvel.main;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -13,8 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.acuscorp.marvel.SharedMarvelViewModel;
 import com.acuscorp.marvel.Models.Result;
-import com.acuscorp.marvel.Models.Thumbnail;
+import com.acuscorp.marvel.R;
+import com.acuscorp.marvel.details.DetailsActivity;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
@@ -23,22 +24,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-    MarvelViewModel marvelViewModel;
+    private SharedMarvelViewModel sharedMarvelViewModel;
     private RecyclerView recyclerView;
     private RecyclerAdapter heroAdapter;
-    private TextView textViewResult;
-    private Api api;
-    private ServiceGenerator serviceGenerator = ServiceGenerator.getInstance();
     private LinearLayoutManager layoutManager;
     private LiveData<List<Result>> results;
-    private int heroId ;
-    private String heroUrl;
+    private Result result;
 
-
-    //---------------------
-//    private String API_KEY = "d3b14f7f4734066b3d557fac768e496c";
-//    private String HASH = "a64c0f47edffb941b376d27e6149d464";
-//    private String TIMESTAMP = "9";
     private int PAGE_SIZE = 10;
     private int OFFSET =10;
     private boolean isLoading;
@@ -53,8 +45,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycle_view);
 
 
-        marvelViewModel = new  ViewModelProvider(this).get(MarvelViewModel.class);
-        marvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
+        sharedMarvelViewModel = new  ViewModelProvider(this).get(SharedMarvelViewModel.class);
+        sharedMarvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
                     @Override
                     public void onChanged(List<Result> results) {
                         progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -66,9 +58,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
         initRecyclerView();
-//        getImage();
-
-
     }
 
     private void initRecyclerView() {
@@ -88,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
         onItemClickListener();
         currentPage=1;
 
-        marvelViewModel.setResults(OFFSET*(currentPage-1));
+        sharedMarvelViewModel.setResults(OFFSET*(currentPage-1));
     }
 
     private void onItemClickListener() {
@@ -96,12 +85,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onItemClick(Result result) {
 
-                String heroUrl   =  result.getThumbnail().getPath()+"/portrait_xlarge."+result.getThumbnail().getExtension();
 
-                Intent intent = new Intent(MainActivity.this,DetailsActivity.class);
-                intent.putExtra(DetailsActivity.EXTRA_HERO_ID, result.getId());
-                intent.putExtra(DetailsActivity.EXTRA_HERO_DESCRIPTION,result.getDescription());
-                intent.putExtra(DetailsActivity.EXTRA_HERO_URL,heroUrl);
+
+                Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
+                intent.putExtra(DetailsActivity.EXTRA_HERO_RESULT, result);
                 startActivity(intent);
             }
         });
@@ -137,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     isLoading=true;
                     currentPage++;
 
-                    marvelViewModel.setResults(OFFSET*(currentPage-1));
+                    sharedMarvelViewModel.setResults(OFFSET*(currentPage-1));
                     progressBar.setVisibility(ProgressBar.VISIBLE);
 
 

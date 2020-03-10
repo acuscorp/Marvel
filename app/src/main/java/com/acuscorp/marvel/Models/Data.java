@@ -1,13 +1,12 @@
-package com.acuscorp.marvel.Models;
 
-import androidx.lifecycle.LiveData;
+package com.acuscorp.marvel.Models; ;
 
+import java.io.Serializable;
+import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
-public class Data {
+public class Data implements Serializable {
 
     @SerializedName("offset")
     @Expose
@@ -25,7 +24,23 @@ public class Data {
     @Expose
     private List<Result> results = null;
 
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Data() {
+    }
+
+    /**
+     *
+     * @param total
+     * @param offset
+     * @param limit
+     * @param count
+     * @param results
+     */
     public Data(Integer offset, Integer limit, Integer total, Integer count, List<Result> results) {
+        super();
         this.offset = offset;
         this.limit = limit;
         this.total = total;

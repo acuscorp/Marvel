@@ -18,14 +18,14 @@ import java.util.List;
 
 
 
-public class MarvelViewModel extends ViewModel {
-    private static final String TAG = "MarvelViewModel";
+public class SharedMarvelViewModel extends ViewModel {
+    private static final String TAG = "SharedMarvelViewModel";
     MutableLiveData<List<Result>> resultados;
     int size = 0;
 
 
 
-    public MarvelViewModel() {
+    public SharedMarvelViewModel() {
 
         resultados = new MutableLiveData<>();
 

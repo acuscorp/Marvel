@@ -1,9 +1,11 @@
-package com.acuscorp.marvel.Models;
+package com.acuscorp.marvel.Models; ;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Thumbnail {
+import java.io.Serializable;
+
+public class Thumbnail implements Serializable {
 
     @SerializedName("path")
     @Expose
@@ -12,7 +14,20 @@ public class Thumbnail {
     @Expose
     private String extension;
 
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Thumbnail() {
+    }
+
+    /**
+     *
+     * @param path
+     * @param extension
+     */
     public Thumbnail(String path, String extension) {
+        super();
         this.path = path;
         this.extension = extension;
     }

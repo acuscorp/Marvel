@@ -1,3 +1,4 @@
+
 package com.acuscorp.marvel.Models; ;
 
 import java.io.Serializable;
@@ -5,7 +6,7 @@ import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Comics implements Serializable {
+public class Events implements Serializable {
 
     @SerializedName("available")
     @Expose
@@ -13,10 +14,7 @@ public class Comics implements Serializable {
     @SerializedName("collectionURI")
     @Expose
     private String collectionURI;
-    @SerializedName("items")
-    @Expose
-    private List<Item> items = null;
-    @SerializedName("returned")
+
     @Expose
     private Integer returned;
 
@@ -24,7 +22,7 @@ public class Comics implements Serializable {
      * No args constructor for use in serialization
      *
      */
-    public Comics() {
+    public Events() {
     }
 
     /**
@@ -34,11 +32,11 @@ public class Comics implements Serializable {
      * @param returned
      * @param items
      */
-    public Comics(Integer available, String collectionURI, List<Item> items, Integer returned) {
+    public Events(Integer available, String collectionURI, Integer returned) {
         super();
         this.available = available;
         this.collectionURI = collectionURI;
-        this.items = items;
+
         this.returned = returned;
     }
 
@@ -58,13 +56,7 @@ public class Comics implements Serializable {
         this.collectionURI = collectionURI;
     }
 
-    public List<Item> getItems() {
-        return items;
-    }
 
-    public void setItems(List<Item> items) {
-        this.items = items;
-    }
 
     public Integer getReturned() {
         return returned;

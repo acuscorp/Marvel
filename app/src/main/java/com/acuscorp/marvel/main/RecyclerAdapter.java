@@ -1,4 +1,4 @@
-package com.acuscorp.marvel;
+package com.acuscorp.marvel.main;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +13,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.Models.Thumbnail;
+import com.acuscorp.marvel.R;
 import com.bumptech.glide.RequestManager;
 
-public class RecyclerAdapter extends ListAdapter<Result, RecyclerAdapter.MainHolder> {
+public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.main.RecyclerAdapter.MainHolder> {
     private RequestManager requestManager;
-
+    private  OnItemClickListener listener;
     public RecyclerAdapter(RequestManager requestManager) {
         super(DIFF_CALLBACK);
         this.requestManager = requestManager;
@@ -39,12 +40,12 @@ public class RecyclerAdapter extends ListAdapter<Result, RecyclerAdapter.MainHol
     };
 
 
-    private  OnItemClickListener listener;
+
     @Override
     public MainHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.cardview_item,parent,false);
+                .inflate(R.layout.cardview_hero_item,parent,false);
 
         return new MainHolder(itemView,requestManager);
     }

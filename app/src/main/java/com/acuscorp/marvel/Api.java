@@ -15,8 +15,6 @@ import retrofit2.http.QueryMap;
 public interface Api {
     @GET("v1/public/characters")
     Call<Marvel> getHero(@QueryMap Map<String,String> parameters);
-    @GET("photos/{id}")
-    Call<Marvel> searchPhoto(
-            @Path("id") String id
-    );
+    @GET
+    Call<Marvel> getURLS(@QueryMap Map<String,String> parameters);
 }

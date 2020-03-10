@@ -1,4 +1,4 @@
-package com.acuscorp.marvel;
+package com.acuscorp.marvel.main;
 
 import android.graphics.Rect;
 

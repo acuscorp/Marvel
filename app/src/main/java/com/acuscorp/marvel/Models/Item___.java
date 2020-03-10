@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Item implements Serializable {
+public class Item___ implements Serializable {
 
     @SerializedName("resourceURI")
     @Expose
@@ -18,7 +18,7 @@ public class Item implements Serializable {
      * No args constructor for use in serialization
      *
      */
-    public Item() {
+    public Item___() {
     }
 
     /**
@@ -26,7 +26,7 @@ public class Item implements Serializable {
      * @param name
      * @param resourceURI
      */
-    public Item(String resourceURI, String name) {
+    public Item___(String resourceURI, String name) {
         super();
         this.resourceURI = resourceURI;
         this.name = name;

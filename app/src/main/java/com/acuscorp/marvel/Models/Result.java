@@ -1,12 +1,12 @@
-package com.acuscorp.marvel.Models;
+package com.acuscorp.marvel.Models; ;
 
+import java.io.Serializable;
+import java.util.List;
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+public class Result implements Serializable {
 
-import com.google.gson.annotations.Expose;
-
-
-public class Result {
 
     @SerializedName("id")
     @Expose
@@ -29,8 +29,40 @@ public class Result {
     @SerializedName("comics")
     @Expose
     private Comics comics;
+    @SerializedName("series")
+    @Expose
+    private Series series;
+    @SerializedName("stories")
+    @Expose
+    private Stories stories;
+    @SerializedName("events")
+    @Expose
+    private Events events;
 
-    public Result(Integer id, String name, String description, String modified, Thumbnail thumbnail, String resourceURI, Comics comics) {
+
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Result() {
+    }
+
+    /**
+     *
+     * @param thumbnail
+     * @param urls
+     * @param stories
+     * @param series
+     * @param comics
+     * @param name
+     * @param description
+     * @param modified
+     * @param id
+     * @param resourceURI
+     * @param events
+     */
+    public Result(Integer id, String name, String description, String modified, Thumbnail thumbnail, String resourceURI, Comics comics, Series series, Stories stories, Events events) {
+        super();
         this.id = id;
         this.name = name;
         this.description = description;
@@ -38,6 +70,10 @@ public class Result {
         this.thumbnail = thumbnail;
         this.resourceURI = resourceURI;
         this.comics = comics;
+        this.series = series;
+        this.stories = stories;
+        this.events = events;
+
     }
 
     public Integer getId() {
@@ -96,6 +132,29 @@ public class Result {
         this.comics = comics;
     }
 
+    public Series getSeries() {
+        return series;
+    }
+
+    public void setSeries(Series series) {
+        this.series = series;
+    }
+
+    public Stories getStories() {
+        return stories;
+    }
+
+    public void setStories(Stories stories) {
+        this.stories = stories;
+    }
+
+    public Events getEvents() {
+        return events;
+    }
+
+    public void setEvents(Events events) {
+        this.events = events;
+    }
 
 
 }

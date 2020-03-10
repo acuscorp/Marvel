@@ -1,11 +1,11 @@
-package com.acuscorp.marvel.Models; ;
+package com.acuscorp.marvel.Models;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Item implements Serializable {
+public class Item_ implements Serializable {
 
     @SerializedName("resourceURI")
     @Expose
@@ -18,7 +18,7 @@ public class Item implements Serializable {
      * No args constructor for use in serialization
      *
      */
-    public Item() {
+    public Item_() {
     }
 
     /**
@@ -26,7 +26,7 @@ public class Item implements Serializable {
      * @param name
      * @param resourceURI
      */
-    public Item(String resourceURI, String name) {
+    public Item_(String resourceURI, String name) {
         super();
         this.resourceURI = resourceURI;
         this.name = name;

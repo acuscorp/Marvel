@@ -1,9 +1,11 @@
-package com.acuscorp.marvel.Models;
+package com.acuscorp.marvel.Models; ;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Marvel {
+import java.io.Serializable;
+
+public class Marvel implements Serializable {
 
     @SerializedName("code")
     @Expose
@@ -27,7 +29,25 @@ public class Marvel {
     @Expose
     private Data data;
 
+    /**
+     * No args constructor for use in serialization
+     *
+     */
+    public Marvel() {
+    }
+
+    /**
+     *
+     * @param copyright
+     * @param code
+     * @param data
+     * @param attributionHTML
+     * @param attributionText
+     * @param etag
+     * @param status
+     */
     public Marvel(Integer code, String status, String copyright, String attributionText, String attributionHTML, String etag, Data data) {
+        super();
         this.code = code;
         this.status = status;
         this.copyright = copyright;

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-public class Item implements Serializable {
+public class Item__ implements Serializable {
 
     @SerializedName("resourceURI")
     @Expose
@@ -13,23 +13,28 @@ public class Item implements Serializable {
     @SerializedName("name")
     @Expose
     private String name;
+    @SerializedName("type")
+    @Expose
+    private String type;
 
     /**
      * No args constructor for use in serialization
      *
      */
-    public Item() {
+    public Item__() {
     }
 
     /**
      *
      * @param name
      * @param resourceURI
+     * @param type
      */
-    public Item(String resourceURI, String name) {
+    public Item__(String resourceURI, String name, String type) {
         super();
         this.resourceURI = resourceURI;
         this.name = name;
+        this.type = type;
     }
 
     public String getResourceURI() {
@@ -46,6 +51,14 @@ public class Item implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
 }
