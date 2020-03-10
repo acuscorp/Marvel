@@ -137,11 +137,11 @@ public class DetailsActivity extends FragmentActivity {
             names.add(item.getName());
             getMoreUrlImages(item.getResourceURI());
         }
-//        for (Item_ item : items_) {
-//            urls.add(item.getResourceURI());
-//            names.add(item.getName());
-//            getMoreUrlImages(item.getResourceURI());
-//        }
+        for (Item_ item : items_) {
+            urls.add(item.getResourceURI());
+            names.add(item.getName());
+            getMoreUrlImages(item.getResourceURI());
+        }
 //        for (Item__ item : items__) {
 //            urls.add(item.getResourceURI());
 //            names.add(item.getName());
@@ -192,6 +192,7 @@ public class DetailsActivity extends FragmentActivity {
                                     String linkImage = result.getThumbnail().getPath() + "/portrait_xlarge." + result.getThumbnail().getExtension();
 
                                     urlsImages.add(linkImage);
+                                    detailsAdapter.notifyDataSetChanged();
 
 
                                 }
@@ -224,11 +225,7 @@ public class DetailsActivity extends FragmentActivity {
                 recyclerView.setLayoutManager(layoutManager);
 
 //                while (names.size()==urlsImages.size())
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+
                 detailsAdapter = new DetailsAdapter(this,initGlide(),urlsImages,names);
                 recyclerView.setAdapter(detailsAdapter);
                 recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
