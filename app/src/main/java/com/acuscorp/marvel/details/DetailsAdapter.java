@@ -49,10 +49,15 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsH
 //                .centerCrop()
 //                .into(holder.mHeroComicImage);
         holder.mHeroName.setText(names.get(position));
-        requestManager
-                .load(urls.get(position))
-                .fitCenter()
-                .into(holder.mHeroComicImage);
+
+        try {
+            requestManager
+                    .load(urls.get(position))
+                    .fitCenter()
+                    .into(holder.mHeroComicImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 
