@@ -48,7 +48,7 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsH
 //                .into(holder.mHeroComicImage);
         holder.mHeroName.setText(names.get(position));
         requestManager
-                .load(heroUrl)
+                .load(urls.get(position))
                 .fitCenter()
                 .into(holder.mHeroComicImage);
 

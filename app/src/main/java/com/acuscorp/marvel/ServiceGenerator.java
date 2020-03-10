@@ -24,6 +24,7 @@ public class ServiceGenerator {
     private static final String BASE_URL = "https://gateway.marvel.com/";
     public static final String HEADER_CACHE_CONTROL = "Cache-Control";
     public static final String HEADER_PRAGMA = "Pragma";
+    public static final String HEADER_HOST = "Host";
 
     private static ServiceGenerator instance;
 
@@ -90,7 +91,7 @@ public class ServiceGenerator {
 
     /**
      * This interceptor will be called ONLY if the network is available
-     * @return
+     *
      */
     private static Interceptor networkInterceptor() {
         return new Interceptor() {
@@ -108,6 +109,7 @@ public class ServiceGenerator {
                         .removeHeader(HEADER_PRAGMA)
                         .removeHeader(HEADER_CACHE_CONTROL)
                         .header(HEADER_CACHE_CONTROL, cacheControl.toString())
+                        .header(HEADER_HOST,"gateway.marvel.com")
                         .build();
             }
         };
@@ -131,6 +133,7 @@ public class ServiceGenerator {
     public static Api getApi(){
         return retrofit().create(Api.class);
     }
+
 
 }
 

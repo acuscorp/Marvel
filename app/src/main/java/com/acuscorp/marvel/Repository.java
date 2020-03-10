@@ -40,6 +40,7 @@ public class Repository {
     public static void getResults(int offset ){
         OFFSET = offset;
         getImage();
+        serviceGenerator.getInstance();
     }
 
     public static List<Result> getResults() {

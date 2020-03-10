@@ -30,6 +30,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Objects;
 
@@ -55,6 +56,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        InetAddress ip;
+        String hostname;
+        try {
+            ip = InetAddress.getLocalHost();
+            hostname = ip.getHostName();
+            Log.d(TAG, "Your current IP address : " + ip);
+            Log.d(TAG,  "Your current Hostname : " + hostname);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
 
         recyclerView = findViewById(R.id.recycle_view);
         progressBar = findViewById(R.id.fabProgress);

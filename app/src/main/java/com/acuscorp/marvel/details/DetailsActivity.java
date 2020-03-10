@@ -126,6 +126,13 @@ public class DetailsActivity extends FragmentActivity {
         for (Item item : items) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
+            getMoreUrlImages(item.getResourceURI());
+
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             counter++;
 
 
@@ -133,34 +140,25 @@ public class DetailsActivity extends FragmentActivity {
         for (Item_ item : items_) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
-            counter++;
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
 
         }
         for (Item__ item : items__) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
-            counter++;
-
-        }
-        try {
-        if (counter >= 15) {
-            for (int i = 0; i < 15; i++) {
-                getMoreUrlImages(urls.get(i));
-
-                    Thread.sleep(100);
-
-            }
-        } else {
-            for (String urlcopy : urls) {
-                getMoreUrlImages(urlcopy);
-                Thread.sleep(100);
+            try {
+                Thread.sleep(25);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
-        }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
+        }
 
         description = result.getDescription();
     }
@@ -188,8 +186,17 @@ public class DetailsActivity extends FragmentActivity {
                 if (getData != null) {
                     Data data = getData.getData();
 
+                    if (data.getResults()!=null)
+                    {
+                        List<Result> results = new ArrayList<>();
+                        results.addAll(data.getResults()) ;
 
-                    results.addAll(data.getResults());
+                        for(Result result:results){
+                            String url =result.getThumbnail().getPath() + "/portrait_xlarge."+result.getThumbnail().getExtension();
+                            urls.add(url);
+                            Log.d(TAG, "onResponse: http image url         "+ url);
+                        }
+                    }
 
                 }
             }
