@@ -1,5 +1,6 @@
 package com.acuscorp.marvel.main;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,15 +14,24 @@ import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.Models.Thumbnail;
 import com.acuscorp.marvel.R;
 import com.bumptech.glide.RequestManager;
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Response;
 
 public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.main.RecyclerAdapter.MainHolder> {
 
     private RequestManager requestManager;
     private OnItemClickListener listener;
 
-    public RecyclerAdapter(RequestManager requestManager) {
+
+    public RecyclerAdapter(RequestManager requestManager ) {
         super(DIFF_CALLBACK);
         this.requestManager = requestManager;
+
     }
 
     private static final DiffUtil.ItemCallback<Result> DIFF_CALLBACK = new DiffUtil.ItemCallback<Result>() {
@@ -84,10 +94,17 @@ public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.mai
             String heroUrl2 = url.getPath() + "/portrait_xlarge." + url.getExtension();
             String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
             requestManager
-                    .load(heroUrl)
+                    .load(heroUrl2)
                     .fitCenter()
                     .into(mHeroImage);
             mHeroName.setText(heroName);
+
+//            Picasso.with(mHeroImage.getContext())
+//                    .load(heroUrl2)
+//                    .into(mHeroImage);
+
+
+
         }
     }
 

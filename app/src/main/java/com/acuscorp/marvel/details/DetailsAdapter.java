@@ -1,20 +1,22 @@
-package com.acuscorp.marvel.details;
 
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
+        package com.acuscorp.marvel.details;
 
-import com.acuscorp.marvel.R;
-import com.bumptech.glide.RequestManager;
-import com.squareup.picasso.Picasso;
+        import android.content.Context;
+        import android.view.LayoutInflater;
+        import android.view.View;
+        import android.view.ViewGroup;
+        import android.widget.ImageView;
+        import android.widget.TextView;
 
-import java.util.List;
+        import androidx.annotation.NonNull;
+        import androidx.recyclerview.widget.RecyclerView;
+
+        import com.acuscorp.marvel.R;
+        import com.bumptech.glide.RequestManager;
+        import com.squareup.picasso.Picasso;
+
+        import java.util.List;
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsHolder> {
 

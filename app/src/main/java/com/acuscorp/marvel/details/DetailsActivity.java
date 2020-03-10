@@ -1,5 +1,6 @@
 package com.acuscorp.marvel.details;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,13 +14,16 @@ import android.graphics.Point;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.TimeUtils;
 import android.view.Display;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.acuscorp.marvel.Models.Data;
+import com.acuscorp.marvel.Models.ImagesUrl;
 import com.acuscorp.marvel.Models.Item;
 import com.acuscorp.marvel.Models.Item_;
 import com.acuscorp.marvel.Models.Item__;
@@ -34,6 +38,7 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.squareup.picasso.Picasso;
 
+import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -69,6 +74,13 @@ public class DetailsActivity extends FragmentActivity {
     private List<String> urls;
     private List<String> names;
     private boolean isPhone;
+    private int PAGE_SIZE_PHONE = 5;
+    private int PAGE_SIZE_TABLET = 10;
+    private boolean isLastPage = false;
+    private boolean isLoading = false;
+    private int iterator = 0;
+    private List<String> urlsImages = new ArrayList<>();
+
     //endregion
 
     @Override
@@ -100,71 +112,49 @@ public class DetailsActivity extends FragmentActivity {
         LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width, height / 2);
         imageView.setLayoutParams(parms);
         textView = findViewById(R.id.text_view_description);
+
     }
 
     private void getURLsFromResult() {
         Thumbnail url = result.getThumbnail();
         String heroName = result.getName();
-        String heroUrl = url.getPath() + "/portrait_xlarge." + url.getExtension();
-        Picasso.get()
+        String heroUrl = url.getPath() + "/standard_large." + url.getExtension();
+        Picasso.with(imageView.getContext())
                 .load(heroUrl)
                 .placeholder(R.mipmap.ic_launcher_round)
                 .fit()
                 .centerCrop()
                 .into(imageView);
-
+        description = result.getDescription();
         urls = new ArrayList<>();
-
         names = new ArrayList<>();
-
         items = result.getComics().getItems();
-
         items_ = result.getSeries().getItems();
-
         items__ = result.getStories().getItems();
         int counter = 0;
         for (Item item : items) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
             getMoreUrlImages(item.getResourceURI());
-
-            try {
-                Thread.sleep(25);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            counter++;
-
-
         }
-        for (Item_ item : items_) {
-            urls.add(item.getResourceURI());
-            names.add(item.getName());
-            try {
-                Thread.sleep(25);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+//        for (Item_ item : items_) {
+//            urls.add(item.getResourceURI());
+//            names.add(item.getName());
+//            getMoreUrlImages(item.getResourceURI());
+//        }
+//        for (Item__ item : items__) {
+//            urls.add(item.getResourceURI());
+//            names.add(item.getName());
+//            getMoreUrlImages(item.getResourceURI());
+//        }
 
 
-        }
-        for (Item__ item : items__) {
-            urls.add(item.getResourceURI());
-            names.add(item.getName());
-            try {
-                Thread.sleep(25);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-
-        }
-
-        description = result.getDescription();
     }
 
+    List<ImagesUrl> urlImages = new ArrayList<>();
 
-    private void getMoreUrlImages(String url) {
+    private void getMoreUrlImages(final String url) {
+        isLoading = true;
         Map<String, String> parameters = new HashMap<>();
 
         parameters.put("ts", TIMESTAMP);
@@ -186,55 +176,102 @@ public class DetailsActivity extends FragmentActivity {
                 if (getData != null) {
                     Data data = getData.getData();
 
-                    if (data.getResults()!=null)
-                    {
-                        List<Result> results = new ArrayList<>();
-                        results.addAll(data.getResults()) ;
+                    if (data.getResults() != null) {
+                        isLoading = false;
 
-                        for(Result result:results){
-                            String url =result.getThumbnail().getPath() + "/portrait_xlarge."+result.getThumbnail().getExtension();
-                            urls.add(url);
-                            Log.d(TAG, "onResponse: http image url         "+ url);
+//                        results.addAll(data.getResults());
+
+
+                        {
+
+                            List<Result> results2 = data.getResults();
+
+                            for (Result result : results2) {
+                                Thumbnail thumbnail = result.getThumbnail();
+                                if (thumbnail != null) {
+                                    String linkImage = result.getThumbnail().getPath() + "/portrait_xlarge." + result.getThumbnail().getExtension();
+
+                                    urlsImages.add(linkImage);
+
+
+                                }
+
+
+                            }
+
+
                         }
+                    }}}
+
+                    @Override
+                    public void onFailure (Call < Marvel > call, Throwable t){
+                        isLoading = false;
+                    }
+                });
+
+
+            }
+
+
+            private void initRecycler() {
+                recyclerView = findViewById(R.id.recycle_view_comics);
+
+
+                if (!description.trim().isEmpty()) {
+                    textView.setText(description);
+                }
+                layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+                recyclerView.setLayoutManager(layoutManager);
+
+//                while (names.size()==urlsImages.size())
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                detailsAdapter = new DetailsAdapter(this,initGlide(),urlsImages,names);
+                recyclerView.setAdapter(detailsAdapter);
+                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+
+                    @Override
+                    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                        super.onScrollStateChanged(recyclerView, newState);
                     }
 
-                }
+                    @Override
+                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                        super.onScrolled(recyclerView, dx, dy);
+                        int visibleItemCount = layoutManager.getChildCount();
+                        int totalItemCount = layoutManager.getItemCount();
+                        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                        if (detailsAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone == true ||
+                                detailsAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone == false) {
+                            isLastPage = true;
+
+                        }
+                        if (!isLoading && !isLastPage) {
+                            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                                    && firstVisibleItemPosition >= 0
+                                    && (totalItemCount >= PAGE_SIZE_PHONE && isPhone == true || totalItemCount >= PAGE_SIZE_TABLET && isPhone == false)) {
+
+
+                            }
+                        }
+                    }
+                });
+
             }
 
-            @Override
-            public void onFailure(Call<Marvel> call, Throwable t) {
+            private RequestManager initGlide() {
+                RequestOptions options = new RequestOptions()
+                        .placeholder(R.mipmap.ic_launcher_round)
+                        .error(R.mipmap.ic_launcher_round);
 
+                return Glide.with(this)
+                        .setDefaultRequestOptions(options);
             }
-        });
 
 
-    }
-
-
-    private void initRecycler() {
-        recyclerView = findViewById(R.id.recycle_view_comics);
-
-
-        if (!description.trim().isEmpty()) {
-            textView.setText(description);
         }
-        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-        recyclerView.setLayoutManager(layoutManager);
-        List<Item> comics = result.getComics().getItems();
-        detailsAdapter = new DetailsAdapter(this, initGlide(), urls, names);
-
-        recyclerView.setAdapter(detailsAdapter);
-
-    }
-
-    private RequestManager initGlide() {
-        RequestOptions options = new RequestOptions()
-                .placeholder(R.mipmap.ic_launcher_round)
-                .error(R.mipmap.ic_launcher_round);
-
-        return Glide.with(this)
-                .setDefaultRequestOptions(options);
-    }
-
-
-}
