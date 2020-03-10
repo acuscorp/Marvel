@@ -10,24 +10,24 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.acuscorp.marvel.Models.Item;
 import com.acuscorp.marvel.R;
 import com.bumptech.glide.RequestManager;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsHolder> {
 
     private Context context;
-    private List<Item> itemList =new ArrayList<>();
+    private List<String> urls;
+    private List<String> names;
+    private RequestManager requestManager;
 
-    public DetailsAdapter(Context context, List<Item> itemList) {
+    public DetailsAdapter(Context context, RequestManager requestManager,List<String> urls, List<String> names) {
         this.context = context;
-        for (Item comics: itemList){
-            this.itemList.add(comics);
-        }
+        this.urls = urls;
+        this.names = names;
+        this.requestManager = requestManager;
     }
 
     @NonNull
@@ -40,27 +40,32 @@ public class DetailsAdapter extends RecyclerView.Adapter<DetailsAdapter.DetailsH
     @Override
     public void onBindViewHolder( DetailsHolder holder, int position) {
         String heroUrl = "https://firebasestorage.googleapis.com/v0/b/fir-ecb2b.appspot.com/o/uploads%2F1583631375309.jpg?alt=media&token=05680ca0-1447-4751-8c27-15d5e0a162ef";
-        Picasso.get()
+//        Picasso.get()
+//                .load(heroUrl)
+//                .placeholder(R.mipmap.ic_launcher_round)
+//                .fit()
+//                .centerCrop()
+//                .into(holder.mHeroComicImage);
+        holder.mHeroName.setText(names.get(position));
+        requestManager
                 .load(heroUrl)
-                .placeholder(R.mipmap.ic_launcher_round)
-                .fit()
-                .centerCrop()
-                .into(holder.mHeroImage);
-        holder.mHeroName.setText("comic name");
+                .fitCenter()
+                .into(holder.mHeroComicImage);
+
     }
 
     @Override
     public int getItemCount() {
-        return itemList.size();
+        return names.size();
     }
 
     class DetailsHolder extends RecyclerView.ViewHolder{
         private RequestManager requestManager;
-        private ImageView mHeroImage;
+        private ImageView mHeroComicImage;
         private TextView mHeroName;
         public DetailsHolder(View itemView) {
             super(itemView);
-            mHeroImage = itemView.findViewById(R.id.iv_comic_image);
+            mHeroComicImage = itemView.findViewById(R.id.iv_comic_image);
             mHeroName = itemView.findViewById(R.id.tv_comic_name);
 
         }

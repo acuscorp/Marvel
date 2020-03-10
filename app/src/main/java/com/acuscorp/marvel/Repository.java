@@ -24,14 +24,14 @@ public class Repository {
     private static final String TAG = "Repository";
     private static List<Result> results = new ArrayList<>() ;
     private static MutableLiveData<List<Result>> resM ;
-    private static String API_KEY = "d3b14f7f4734066b3d557fac768e496c";
-    private static String HASH = "a64c0f47edffb941b376d27e6149d464";
-    private static String TIMESTAMP = "9";
+    public static String API_KEY = "d3b14f7f4734066b3d557fac768e496c";
+    public static String HASH = "a64c0f47edffb941b376d27e6149d464";
+    public static String TIMESTAMP = "9";
     private static final int PAGE_SIZE=10;
     private static int OFFSET;
 
 
-    private static ServiceGenerator serviceGenerator;
+    public static ServiceGenerator serviceGenerator;
 
     public static void getResults(int offset ){
         OFFSET = offset;

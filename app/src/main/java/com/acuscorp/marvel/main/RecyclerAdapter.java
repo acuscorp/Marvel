@@ -76,6 +76,7 @@ public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.mai
             super(itemView);
             mHeroImage = itemView.findViewById(R.id.iv_hero_image);
             mHeroName = itemView.findViewById(R.id.tv_hero_name);
+
             this.requestManager = requestManager;
 
             itemView.setOnClickListener(new View.OnClickListener() {

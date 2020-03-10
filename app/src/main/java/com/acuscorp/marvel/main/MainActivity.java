@@ -1,9 +1,13 @@
 package com.acuscorp.marvel.main;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
@@ -21,6 +25,7 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
@@ -43,8 +48,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         recyclerView = findViewById(R.id.recycle_view);
+        TelephonyManager manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
+        if((Objects.requireNonNull(manager).getPhoneType()==TelephonyManager.PHONE_TYPE_NONE)){
+            Toast.makeText(this, "You are using a table", Toast.LENGTH_LONG).show();
+        }else {
+            Toast.makeText(this, "You are using a phone", Toast.LENGTH_LONG).show();
+        }
 
-
+    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         sharedMarvelViewModel = new  ViewModelProvider(this).get(SharedMarvelViewModel.class);
         sharedMarvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
                     @Override
@@ -84,8 +95,6 @@ public class MainActivity extends AppCompatActivity {
         heroAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Result result) {
-
-
 
                 Intent intent = new Intent(MainActivity.this, DetailsActivity.class);
                 intent.putExtra(DetailsActivity.EXTRA_HERO_RESULT, result);
