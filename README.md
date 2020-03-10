@@ -8,4 +8,4 @@ I got next links from Marvel but I couldn't load them into the ImageView.
 http://i.annihil.us/u/prod/marvel/i/mg/c/e0/535fecbbb9784/portrait_xlarge.jpg
 http://i.annihil.us/u/prod/marvel/i/mg/4/60/52695285d6e7e/portrait_xlarge.jpg
 
-So, now is harcoded the link image and the placeholderis my logo that i created 
+So, now is hardcoded the image link  and the placeholderis is the logo that i create
