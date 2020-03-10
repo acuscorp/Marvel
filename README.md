@@ -20,4 +20,4 @@ onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/1/10/4
 onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/d/03/58dd080719806/portrait_xlarge.jpg
 onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/b/80/4f206cc0ac28a/portrait_xlarge.jpg
 
-Well the solution fro loadinbg the images is changing the Glide version
+Well the solution for loading the images is changing the Glide version
