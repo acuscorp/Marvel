@@ -53,59 +53,59 @@ public class DetailsActivity extends FragmentActivity {
 
     private static final String TAG = "DetailsActivity";
     public static final String EXTRA_HERO_RESULT = "com.acuscorp.marvel.result";
-
-    private int heroId = 0;
+    //region Variables
     private String description = "";
-    private String heroUrl;
     private SharedMarvelViewModel sharedMarvelViewModel;
     private ImageView imageView;
     private TextView textView;
     private LinearLayoutManager layoutManager;
     private RecyclerView recyclerView;
     private DetailsAdapter detailsAdapter;
+    private List<Result> results;
     private Result result;
-
     private List<Item> items;
     private List<Item_> items_;
     private List<Item__> items__;
     private List<String> urls;
     private List<String> names;
     private boolean isPhone;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-        Display display = getWindowManager().getDefaultDisplay();
+        setUI();
+        Intent intent = getIntent();
+        result = (Result) intent.getExtras().get(EXTRA_HERO_RESULT);
+        getURLsFromResult();
+        initRecycler();
+    }
 
+    private void setUI() {
+        Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
 
-        if(width>1080){
-            layoutManager = new GridLayoutManager(this,3);
-
-        }else {
+        if (width > 1080) {
+            layoutManager = new GridLayoutManager(this, 3);
+        } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             layoutManager = new LinearLayoutManager(this);
-            isPhone=true;
-
+            isPhone = true;
         }
-
-
-
-
         imageView = findViewById(R.id.image_view_hero);
-        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width,height/2);
+        LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width, height / 2);
         imageView.setLayoutParams(parms);
         textView = findViewById(R.id.text_view_description);
+    }
 
-        Intent intent = getIntent();
-        result = (Result) intent.getExtras().get(EXTRA_HERO_RESULT);
+    private void getURLsFromResult() {
         Thumbnail url = result.getThumbnail();
         String heroName = result.getName();
-        String heroUrl   =  url.getPath()+"/portrait_xlarge."+url.getExtension();
+        String heroUrl = url.getPath() + "/portrait_xlarge." + url.getExtension();
         Picasso.get()
                 .load(heroUrl)
                 .placeholder(R.mipmap.ic_launcher_round)
@@ -122,7 +122,7 @@ public class DetailsActivity extends FragmentActivity {
         items_ = result.getSeries().getItems();
 
         items__ = result.getStories().getItems();
-        int counter =0;
+        int counter = 0;
         for (Item item : items) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
@@ -142,22 +142,27 @@ public class DetailsActivity extends FragmentActivity {
             counter++;
 
         }
-
-        if(counter>=15){
-            for (int i=0;i<15;i++){
+        try {
+        if (counter >= 15) {
+            for (int i = 0; i < 15; i++) {
                 getMoreUrlImages(urls.get(i));
+
+                    Thread.sleep(100);
+
             }
-        }else {
-            for(String urlcopy :urls){
+        } else {
+            for (String urlcopy : urls) {
                 getMoreUrlImages(urlcopy);
+                Thread.sleep(100);
             }
 
+        }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
 
         description = result.getDescription();
-        initRecycler();
-
     }
 
 
@@ -168,23 +173,23 @@ public class DetailsActivity extends FragmentActivity {
         parameters.put("apikey", API_KEY);
         parameters.put("hash", HASH);
 
-        serviceGenerator.getApi().getURLS(url,parameters).enqueue(new Callback<Marvel>() {
+        serviceGenerator.getApi().getURLS(url, parameters).enqueue(new Callback<Marvel>() {
             @Override
             public void onResponse(Call<Marvel> call, Response<Marvel> response) {
                 if (!response.isSuccessful()) {
                     int responseCode = response.code();
-                    if(responseCode != 200) { // 504 Unsatisfiable Request (only-if-cached)
+                    if (responseCode != 200) { // 504 Unsatisfiable Request (only-if-cached)
 
-
+                        return;
                     }
-                    return;
+
                 }
                 Marvel getData = response.body();
-                if(getData!=null){
+                if (getData != null) {
                     Data data = getData.getData();
 
 
-//                    results.addAll(data.getResults());
+                    results.addAll(data.getResults());
 
                 }
             }
@@ -194,7 +199,6 @@ public class DetailsActivity extends FragmentActivity {
 
             }
         });
-
 
 
     }
@@ -210,13 +214,13 @@ public class DetailsActivity extends FragmentActivity {
         layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
         recyclerView.setLayoutManager(layoutManager);
         List<Item> comics = result.getComics().getItems();
-        detailsAdapter = new DetailsAdapter(this,initGlide(), urls,names);
+        detailsAdapter = new DetailsAdapter(this, initGlide(), urls, names);
 
         recyclerView.setAdapter(detailsAdapter);
 
     }
 
-    private RequestManager initGlide(){
+    private RequestManager initGlide() {
         RequestOptions options = new RequestOptions()
                 .placeholder(R.mipmap.ic_launcher_round)
                 .error(R.mipmap.ic_launcher_round);

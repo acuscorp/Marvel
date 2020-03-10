@@ -34,92 +34,90 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
+
+    //region Variables
     private static final String TAG = "MainActivity";
-    private static final int PAGE_SIZE_TABLET = 20 ;
-    private static final int PAGE_SIZE_PHONE = 10 ;
+    private static final int PAGE_SIZE_TABLET = 20;
+    private static final int PAGE_SIZE_PHONE = 10;
     private SharedMarvelViewModel sharedMarvelViewModel;
     private RecyclerView recyclerView;
     private RecyclerAdapter heroAdapter;
     private LinearLayoutManager layoutManager;
-    private LiveData<List<Result>> results;
-    private Result result;
-    private boolean isPhone=false;
-
-
-    private int OFFSET =10;
+    private boolean isPhone = false;
+    private int OFFSET = 10;
     private boolean isLoading;
     private boolean isLastPage;
     private int currentPage;
     private ProgressBar progressBar;
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        int spanCount= 3;
+
         recyclerView = findViewById(R.id.recycle_view);
         progressBar = findViewById(R.id.fabProgress);
         progressBar.setVisibility(ProgressBar.VISIBLE);
+        setLayoutManaye();
+        initViewModel();
+        initRecyclerView();
+    }
+
+    //region initFunctions
+    private void setLayoutManaye() {
         Display display = getWindowManager().getDefaultDisplay();
+        int spanCount = 3;
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
-
-
-
-        if(width>1080){
+        if (width > 1080) {
             Repository.setPageSize(PAGE_SIZE_TABLET);
-            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
-                layoutManager = new GridLayoutManager(this,spanCount+2);
-            }
-            else {
-                layoutManager = new GridLayoutManager(this,spanCount);
+            if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                layoutManager = new GridLayoutManager(this, spanCount + 2);
+            } else {
+                layoutManager = new GridLayoutManager(this, spanCount);
 
             }
 
-        }else {
+        } else {
             Repository.setPageSize(PAGE_SIZE_PHONE);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             layoutManager = new LinearLayoutManager(this);
-            isPhone=true;
+            isPhone = true;
 
         }
         recyclerView.setLayoutManager(layoutManager);
+    }
 
-        sharedMarvelViewModel = new  ViewModelProvider(this).get(SharedMarvelViewModel.class);
+    private void initViewModel() {
+
+        sharedMarvelViewModel = new ViewModelProvider(this).get(SharedMarvelViewModel.class);
         sharedMarvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
                 heroAdapter.submitList(results);
                 heroAdapter.notifyDataSetChanged();
-                isLoading=false;
-                isLastPage=false;
+                isLoading = false;
+                isLastPage = false;
 
             }
         });
-        initRecyclerView();
     }
 
     private void initRecyclerView() {
-
-
-
-
-
-
         VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(20);
         recyclerView.addItemDecoration(itemDecorator);
         heroAdapter = new RecyclerAdapter(initGlide());
         recyclerView.setAdapter(heroAdapter);
         recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
-
         onItemClickListener();
-        currentPage=1;
-
-        sharedMarvelViewModel.setResults(OFFSET*(currentPage-1));
+        currentPage = 1;
+        sharedMarvelViewModel.setResults(OFFSET * (currentPage - 1));
     }
+    //endregion
 
     private void onItemClickListener() {
         heroAdapter.setOnItemClickListener(new RecyclerAdapter.OnItemClickListener() {
@@ -137,9 +135,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             super.onScrollStateChanged(recyclerView, newState);
-            if (newState == RecyclerView.SCROLL_STATE_IDLE){
+            if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                 int position = newState;
-                Log.d(TAG, "onScrollStateChanged: position "+ position);
+                Log.d(TAG, "onScrollStateChanged: position " + position);
             }
         }
 
@@ -151,22 +149,20 @@ public class MainActivity extends AppCompatActivity {
             int visibleItemCount = layoutManager.getChildCount();
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-            if (heroAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone==true ||
-                    heroAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone==false   ) {
+            if (heroAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone == true ||
+                    heroAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone == false) {
                 isLastPage = true;
 
             }
             if (!isLoading && !isLastPage) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
-                        && (totalItemCount >= PAGE_SIZE_PHONE && isPhone ==true || totalItemCount >= PAGE_SIZE_TABLET && isPhone ==false))
-                {
-                    isLoading=true;
+                        && (totalItemCount >= PAGE_SIZE_PHONE && isPhone == true || totalItemCount >= PAGE_SIZE_TABLET && isPhone == false)) {
+                    isLoading = true;
                     currentPage++;
 
-                    sharedMarvelViewModel.setResults(OFFSET*(currentPage-1));
+                    sharedMarvelViewModel.setResults(OFFSET * (currentPage - 1));
                     progressBar.setVisibility(ProgressBar.VISIBLE);
-
 
 
                 }
@@ -174,10 +170,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-
-
-
-    private RequestManager initGlide(){
+    private RequestManager initGlide() {
         RequestOptions options = new RequestOptions()
                 .placeholder(R.mipmap.ic_launcher_round)
                 .error(R.mipmap.ic_launcher_round);
