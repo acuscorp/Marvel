@@ -3,9 +3,13 @@ package com.acuscorp.marvel.main;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -13,9 +17,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.acuscorp.marvel.Repository;
 import com.acuscorp.marvel.SharedMarvelViewModel;
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.R;
@@ -29,14 +35,17 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+    private static final int PAGE_SIZE_TABLET = 20 ;
+    private static final int PAGE_SIZE_PHONE = 10 ;
     private SharedMarvelViewModel sharedMarvelViewModel;
     private RecyclerView recyclerView;
     private RecyclerAdapter heroAdapter;
     private LinearLayoutManager layoutManager;
     private LiveData<List<Result>> results;
     private Result result;
+    private boolean isPhone=false;
 
-    private int PAGE_SIZE = 10;
+
     private int OFFSET =10;
     private boolean isLoading;
     private boolean isLastPage;
@@ -47,27 +56,49 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        int spanCount= 3;
         recyclerView = findViewById(R.id.recycle_view);
-        TelephonyManager manager = (TelephonyManager)getSystemService(Context.TELEPHONY_SERVICE);
-        if((Objects.requireNonNull(manager).getPhoneType()==TelephonyManager.PHONE_TYPE_NONE)){
-            Toast.makeText(this, "You are using a table", Toast.LENGTH_LONG).show();
-        }else {
-            Toast.makeText(this, "You are using a phone", Toast.LENGTH_LONG).show();
-        }
+        progressBar = findViewById(R.id.fabProgress);
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        Display display = getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        int width = size.x;
+        int height = size.y;
 
-    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+
+        if(width>1080){
+            Repository.setPageSize(PAGE_SIZE_TABLET);
+            if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE){
+                layoutManager = new GridLayoutManager(this,spanCount+2);
+            }
+            else {
+                layoutManager = new GridLayoutManager(this,spanCount);
+
+            }
+
+        }else {
+            Repository.setPageSize(PAGE_SIZE_PHONE);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            layoutManager = new LinearLayoutManager(this);
+            isPhone=true;
+
+        }
+        recyclerView.setLayoutManager(layoutManager);
+
         sharedMarvelViewModel = new  ViewModelProvider(this).get(SharedMarvelViewModel.class);
         sharedMarvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
-                    @Override
-                    public void onChanged(List<Result> results) {
-                        progressBar.setVisibility(ProgressBar.INVISIBLE);
-                        heroAdapter.submitList(results);
-                        heroAdapter.notifyDataSetChanged();
-                        isLoading=false;
-                        isLastPage=false;
+            @Override
+            public void onChanged(List<Result> results) {
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
+                heroAdapter.submitList(results);
+                heroAdapter.notifyDataSetChanged();
+                isLoading=false;
+                isLastPage=false;
 
-                    }
-                });
+            }
+        });
         initRecyclerView();
     }
 
@@ -75,10 +106,9 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        progressBar = findViewById(R.id.fabProgress);
-        progressBar.setVisibility(ProgressBar.VISIBLE);
-        layoutManager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(layoutManager);
+
+
+
         VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(20);
         recyclerView.addItemDecoration(itemDecorator);
         heroAdapter = new RecyclerAdapter(initGlide());
@@ -121,14 +151,15 @@ public class MainActivity extends AppCompatActivity {
             int visibleItemCount = layoutManager.getChildCount();
             int totalItemCount = layoutManager.getItemCount();
             int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-            if (heroAdapter.getItemCount() < PAGE_SIZE) {
+            if (heroAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone==true ||
+                    heroAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone==false   ) {
                 isLastPage = true;
 
             }
             if (!isLoading && !isLastPage) {
                 if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
                         && firstVisibleItemPosition >= 0
-                        && totalItemCount >= PAGE_SIZE)
+                        && (totalItemCount >= PAGE_SIZE_PHONE && isPhone ==true || totalItemCount >= PAGE_SIZE_TABLET && isPhone ==false))
                 {
                     isLoading=true;
                     currentPage++;

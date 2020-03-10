@@ -1,12 +1,14 @@
 package com.acuscorp.marvel.details;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.telephony.TelephonyManager;
@@ -68,20 +70,32 @@ public class DetailsActivity extends FragmentActivity {
     private List<Item__> items__;
     private List<String> urls;
     private List<String> names;
+    private boolean isPhone;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
-
-
-
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         Display display = getWindowManager().getDefaultDisplay();
+        
         Point size = new Point();
         display.getSize(size);
         int width = size.x;
         int height = size.y;
+
+        if(width>1080){
+            layoutManager = new GridLayoutManager(this,3);
+
+        }else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            layoutManager = new LinearLayoutManager(this);
+            isPhone=true;
+
+        }
+
+
+
+
         imageView = findViewById(R.id.image_view_hero);
         LinearLayout.LayoutParams parms = new LinearLayout.LayoutParams(width,height/2);
         imageView.setLayoutParams(parms);
@@ -129,8 +143,8 @@ public class DetailsActivity extends FragmentActivity {
 
         }
 
-        if(counter>=10){
-            for (int i=0;i<10;i++){
+        if(counter>=15){
+            for (int i=0;i<15;i++){
                 getMoreUrlImages(urls.get(i));
             }
         }else {

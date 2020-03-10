@@ -27,8 +27,12 @@ public class Repository {
     public static String API_KEY = "d3b14f7f4734066b3d557fac768e496c";
     public static String HASH = "a64c0f47edffb941b376d27e6149d464";
     public static String TIMESTAMP = "9";
-    private static final int PAGE_SIZE=10;
+    private static  int PAGE_SIZE=10;
     private static int OFFSET;
+
+    public static void setPageSize(int pageSize){
+        PAGE_SIZE= pageSize;
+    }
 
 
     public static ServiceGenerator serviceGenerator;
