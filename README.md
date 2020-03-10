@@ -10,7 +10,7 @@ http://i.annihil.us/u/prod/marvel/i/mg/4/60/52695285d6e7e/portrait_xlarge.jpg
 
 So, now is hardcoded the image link  and the placeholderis is the logo that i create
 
-I got from log this imageslinks 
+I got from log this imageslinks but still not showing them 
 onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/c/60/58dbce634ea70/portrait_xlarge.jpg
 onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/f/c0/58dbda827bec8/portrait_xlarge.jpg
 onResponse: http image url         http://i.annihil.us/u/prod/marvel/i/mg/c/10/58dd01dbc6e51/portrait_xlarge.jpg
