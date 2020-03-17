@@ -1,11 +1,5 @@
 package com.acuscorp.marvel.details;
 
-import androidx.annotation.NonNull;
-import androidx.fragment.app.FragmentActivity;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Point;
@@ -15,15 +9,20 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.acuscorp.marvel.Models.Data;
-import com.acuscorp.marvel.Models.ImagesUrl;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.acuscorp.marvel.Models.Item;
 import com.acuscorp.marvel.Models.Item_;
 import com.acuscorp.marvel.Models.Item__;
-import com.acuscorp.marvel.Models.Marvel;
-import com.acuscorp.marvel.Models.Thumbnail;
-import com.acuscorp.marvel.SharedMarvelViewModel;
+import com.acuscorp.marvel.Models.NameUrls;
 import com.acuscorp.marvel.Models.Result;
+import com.acuscorp.marvel.Models.Thumbnail;
 import com.acuscorp.marvel.R;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
@@ -31,18 +30,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static com.acuscorp.marvel.RepositoryB.API_KEY;
-import static com.acuscorp.marvel.RepositoryB.HASH;
-import static com.acuscorp.marvel.RepositoryB.TIMESTAMP;
-import static com.acuscorp.marvel.RepositoryB.serviceGenerator;
 
 public class DetailsActivity extends FragmentActivity {
 
@@ -50,7 +38,7 @@ public class DetailsActivity extends FragmentActivity {
     public static final String EXTRA_HERO_RESULT = "com.acuscorp.marvel.result";
     //region Variables
     private String description = "";
-    private SharedMarvelViewModel sharedMarvelViewModel;
+    private DetailsViewModel detailsViewModel;
     private ImageView imageView;
     private TextView textView;
     private LinearLayoutManager layoutManager;
@@ -69,8 +57,6 @@ public class DetailsActivity extends FragmentActivity {
     private boolean isLastPage = false;
     private boolean isLoading = false;
     private int iterator = 0;
-    private List<String> urlsImages = new ArrayList<>();
-
     //endregion
 
     @Override
@@ -80,8 +66,9 @@ public class DetailsActivity extends FragmentActivity {
         setUI();
         Intent intent = getIntent();
         result = (Result) intent.getExtras().get(EXTRA_HERO_RESULT);
-        getURLsFromResult();
         initRecycler();
+        getURLsFromResult();
+
     }
 
     private void setUI() {
@@ -125,140 +112,89 @@ public class DetailsActivity extends FragmentActivity {
         for (Item item : items) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
-            getMoreUrlImages(item.getResourceURI());
+            detailsViewModel.getMoreUrlImages(item.getResourceURI());
+
         }
         for (Item_ item : items_) {
             urls.add(item.getResourceURI());
             names.add(item.getName());
-            getMoreUrlImages(item.getResourceURI());
+            detailsViewModel.getMoreUrlImages(item.getResourceURI());
         }
-//        for (Item__ item : items__) {
-//            urls.add(item.getResourceURI());
-//            names.add(item.getName());
-//            getMoreUrlImages(item.getResourceURI());
-//        }
+        for (Item__ item : items__) {
+            urls.add(item.getResourceURI());
+            names.add(item.getName());
+            detailsViewModel.getMoreUrlImages(item.getResourceURI());
+        }
+
+
+        detailsViewModel.getAllUrl().observe(this, new Observer<List<String>>() {
+            @Override
+            public void onChanged(List<String> strings) {
+                detailsAdapter.submitList(strings);
+            }
+        });
 
 
     }
 
-    List<ImagesUrl> urlImages = new ArrayList<>();
 
-    private void getMoreUrlImages(final String url) {
-        isLoading = true;
-        Map<String, String> parameters = new HashMap<>();
+    private void initRecycler() {
+        recyclerView = findViewById(R.id.recycle_view_comics);
 
-        parameters.put("ts", TIMESTAMP);
-        parameters.put("apikey", API_KEY);
-        parameters.put("hash", HASH);
+        detailsViewModel = new ViewModelProvider(this).get(DetailsViewModel.class);
 
-        serviceGenerator.getApi().getURLS(url, parameters).enqueue(new Callback<Marvel>() {
-            @Override
-            public void onResponse(Call<Marvel> call, Response<Marvel> response) {
-                if (!response.isSuccessful()) {
-                    int responseCode = response.code();
-                    if (responseCode != 200) { // 504 Unsatisfiable Request (only-if-cached)
-
-                        return;
-                    }
-
-                }
-                Marvel getData = response.body();
-                if (getData != null) {
-                    Data data = getData.getData();
-
-                    if (data.getResults() != null) {
-                        isLoading = false;
-
-//                        results.addAll(data.getAllResults());
-
-
-                        {
-
-                            List<Result> results2 = data.getResults();
-
-                            for (Result result : results2) {
-                                Thumbnail thumbnail = result.getThumbnail();
-                                if (thumbnail != null) {
-                                    String linkImage = result.getThumbnail().getPath() + "/portrait_xlarge." + result.getThumbnail().getExtension();
-
-                                    urlsImages.add(linkImage);
-                                    detailsAdapter.notifyDataSetChanged();
-
-
-                                }
-
-
-                            }
-
-
-                        }
-                    }}}
-
-                    @Override
-                    public void onFailure (Call < Marvel > call, Throwable t){
-                        isLoading = false;
-                    }
-                });
-
-
-            }
-
-
-            private void initRecycler() {
-                recyclerView = findViewById(R.id.recycle_view_comics);
-
-
-                if (!description.trim().isEmpty()) {
-                    textView.setText(description);
-                }
-                layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
-                recyclerView.setLayoutManager(layoutManager);
-
-//                while (names.size()==urlsImages.size())
-
-                detailsAdapter = new DetailsAdapter(this,initGlide(),urlsImages,names);
-                recyclerView.setAdapter(detailsAdapter);
-                recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
-
-
-                    @Override
-                    public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                        super.onScrollStateChanged(recyclerView, newState);
-                    }
-
-                    @Override
-                    public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
-                        super.onScrolled(recyclerView, dx, dy);
-                        int visibleItemCount = layoutManager.getChildCount();
-                        int totalItemCount = layoutManager.getItemCount();
-                        int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
-
-                        if (detailsAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone == true ||
-                                detailsAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone == false) {
-                            isLastPage = true;
-
-                        }
-                        if (!isLoading && !isLastPage) {
-                            if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                                    && firstVisibleItemPosition >= 0
-                                    && (totalItemCount >= PAGE_SIZE_PHONE && isPhone == true || totalItemCount >= PAGE_SIZE_TABLET && isPhone == false)) {
-
-
-                            }
-                        }
-                    }
-                });
-
-            }
-
-            private RequestManager initGlide() {
-                RequestOptions options = new RequestOptions()
-                        .placeholder(R.mipmap.ic_launcher_round)
-                        .error(R.mipmap.ic_launcher_round);
-
-                return Glide.with(this)
-                        .setDefaultRequestOptions(options);
-            }
-
-
+        if (!description.trim().isEmpty()) {
+            textView.setText(description);
         }
+        layoutManager = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        recyclerView.setLayoutManager(layoutManager);
+
+
+
+
+        detailsAdapter = new DetailsAdapter(initGlide());
+        recyclerView.setAdapter(detailsAdapter);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
+
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int visibleItemCount = layoutManager.getChildCount();
+                int totalItemCount = layoutManager.getItemCount();
+                int firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition();
+
+                if (detailsAdapter.getItemCount() < PAGE_SIZE_PHONE && isPhone == true ||
+                        detailsAdapter.getItemCount() < PAGE_SIZE_TABLET && isPhone == false) {
+                    isLastPage = true;
+
+                }
+                if (!isLoading && !isLastPage) {
+                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
+                            && firstVisibleItemPosition >= 0
+                            && (totalItemCount >= PAGE_SIZE_PHONE && isPhone == true || totalItemCount >= PAGE_SIZE_TABLET && isPhone == false)) {
+
+
+                    }
+                }
+            }
+        });
+
+    }
+
+    private RequestManager initGlide() {
+        RequestOptions options = new RequestOptions()
+                .placeholder(R.mipmap.ic_launcher_round)
+                .error(R.mipmap.ic_launcher_round);
+
+        return Glide.with(this)
+                .setDefaultRequestOptions(options);
+    }
+
+
+}

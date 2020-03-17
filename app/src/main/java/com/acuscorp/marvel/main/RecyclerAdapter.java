@@ -1,28 +1,22 @@
 package com.acuscorp.marvel.main;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.Models.Thumbnail;
 import com.acuscorp.marvel.R;
 import com.bumptech.glide.RequestManager;
-import com.squareup.picasso.Picasso;
 
-import java.io.IOException;
-
-import okhttp3.Interceptor;
-import okhttp3.OkHttpClient;
-import okhttp3.Response;
-
-public class RecyclerAdapter extends ListAdapter<Result, com.acuscorp.marvel.main.RecyclerAdapter.MainHolder> {
+public class RecyclerAdapter extends ListAdapter<Result, RecyclerAdapter.MainHolder> {
 
     private RequestManager requestManager;
     private OnItemClickListener listener;

@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.acuscorp.marvel.RepositoryB;
-import com.acuscorp.marvel.SharedMarvelViewModel;
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.R;
 import com.acuscorp.marvel.details.DetailsActivity;
