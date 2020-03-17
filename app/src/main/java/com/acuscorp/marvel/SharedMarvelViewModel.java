@@ -1,18 +1,12 @@
 package com.acuscorp.marvel;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
-import android.widget.ListAdapter;
-
-import androidx.lifecycle.AndroidViewModel;
+import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 
-import com.acuscorp.marvel.Models.Data;
 import com.acuscorp.marvel.Models.Result;
-import com.acuscorp.marvel.Repository;
 
 import java.util.List;
 
@@ -20,57 +14,24 @@ import java.util.List;
 
 public class SharedMarvelViewModel extends ViewModel {
     private static final String TAG = "SharedMarvelViewModel";
-    MutableLiveData<List<Result>> resultados;
+    LiveData<List<Result>> resultados;
+    private Repository repository;
     int size = 0;
 
 
 
-    public SharedMarvelViewModel() {
-
-        resultados = new MutableLiveData<>();
-
+    public SharedMarvelViewModel(){
+        repository = new Repository();
+        resultados = repository.getAllResults();
 
     }
 
-    public LiveData<List<Result>> getResults(){
+    public LiveData<List<Result>> getAllResults(){
         return resultados;
     }
-    public void setResults(int offset){
-        Repository.getResults(offset);
-        final Handler hdlk = new Handler();
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                size = Repository.getResults().size();
-                long counter=0;
-
-                while (Repository.getResults().size()<=size && counter<5){
-                    try {
-                        Thread.sleep(1000);
-                        counter++;
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
 
 
-
-
-                hdlk.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        resultados.setValue(Repository.getResults());
-                        Log.d(TAG, "run: There has no beeing any result");
-
-                    }
-                });
-
-
-            }
-        }).start();
-
-
-
+    public void getMoreResults(int offset, int page_size) {
+        repository.getMoreResults(offset, page_size);
     }
-
 }

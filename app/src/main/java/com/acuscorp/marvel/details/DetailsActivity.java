@@ -6,21 +6,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.util.Log;
-import android.util.TimeUtils;
 import android.view.Display;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.acuscorp.marvel.Models.Data;
 import com.acuscorp.marvel.Models.ImagesUrl;
@@ -29,7 +22,6 @@ import com.acuscorp.marvel.Models.Item_;
 import com.acuscorp.marvel.Models.Item__;
 import com.acuscorp.marvel.Models.Marvel;
 import com.acuscorp.marvel.Models.Thumbnail;
-import com.acuscorp.marvel.Repository;
 import com.acuscorp.marvel.SharedMarvelViewModel;
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.R;
@@ -38,21 +30,19 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.squareup.picasso.Picasso;
 
-import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.acuscorp.marvel.Repository.API_KEY;
-import static com.acuscorp.marvel.Repository.HASH;
-import static com.acuscorp.marvel.Repository.TIMESTAMP;
-import static com.acuscorp.marvel.Repository.serviceGenerator;
+import static com.acuscorp.marvel.RepositoryB.API_KEY;
+import static com.acuscorp.marvel.RepositoryB.HASH;
+import static com.acuscorp.marvel.RepositoryB.TIMESTAMP;
+import static com.acuscorp.marvel.RepositoryB.serviceGenerator;
 
 public class DetailsActivity extends FragmentActivity {
 
@@ -179,7 +169,7 @@ public class DetailsActivity extends FragmentActivity {
                     if (data.getResults() != null) {
                         isLoading = false;
 
-//                        results.addAll(data.getResults());
+//                        results.addAll(data.getAllResults());
 
 
                         {

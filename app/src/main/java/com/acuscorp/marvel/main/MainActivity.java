@@ -1,27 +1,22 @@
 package com.acuscorp.marvel.main;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.acuscorp.marvel.Repository;
+import com.acuscorp.marvel.RepositoryB;
 import com.acuscorp.marvel.SharedMarvelViewModel;
 import com.acuscorp.marvel.Models.Result;
 import com.acuscorp.marvel.R;
@@ -32,14 +27,14 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.net.InetAddress;
 import java.util.List;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     //region Variables
     private static final String TAG = "MainActivity";
-    private static final int PAGE_SIZE_TABLET = 20;
-    private static final int PAGE_SIZE_PHONE = 10;
+    private final int PAGE_SIZE_TABLET = 20;
+    private final int PAGE_SIZE_PHONE = 10;
+    private int PAGE_SIZE;
     private SharedMarvelViewModel sharedMarvelViewModel;
     private RecyclerView recyclerView;
     private RecyclerAdapter heroAdapter;
@@ -48,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     private int OFFSET = 10;
     private boolean isLoading;
     private boolean isLastPage;
-    private int currentPage;
+    private int currentPage=1;
     private ProgressBar progressBar;
     //endregion
 
@@ -86,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         int width = size.x;
         int height = size.y;
         if (width > 1080) {
-            Repository.setPageSize(PAGE_SIZE_TABLET);
+            PAGE_SIZE=20;
             if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
                 layoutManager = new GridLayoutManager(this, spanCount + 2);
             } else {
@@ -95,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
         } else {
-            Repository.setPageSize(PAGE_SIZE_PHONE);
+            PAGE_SIZE=10;
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             layoutManager = new LinearLayoutManager(this);
             isPhone = true;
@@ -107,7 +102,9 @@ public class MainActivity extends AppCompatActivity {
     private void initViewModel() {
 
         sharedMarvelViewModel = new ViewModelProvider(this).get(SharedMarvelViewModel.class);
-        sharedMarvelViewModel.getResults().observe(this, new Observer<List<Result>>() {
+
+        sharedMarvelViewModel.getMoreResults(OFFSET * (currentPage - 1),PAGE_SIZE);
+        sharedMarvelViewModel.getAllResults().observe(this, new Observer<List<Result>>() {
             @Override
             public void onChanged(List<Result> results) {
                 progressBar.setVisibility(ProgressBar.INVISIBLE);
@@ -121,14 +118,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView() {
-        VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(20);
+        VerticalSpacingItemDecorator itemDecorator = new VerticalSpacingItemDecorator(10);
         recyclerView.addItemDecoration(itemDecorator);
         heroAdapter = new RecyclerAdapter(initGlide());
         recyclerView.setAdapter(heroAdapter);
         recyclerView.addOnScrollListener(recyclerViewOnScrollListener);
         onItemClickListener();
-        currentPage = 1;
-        sharedMarvelViewModel.setResults(OFFSET * (currentPage - 1));
+
     }
     //endregion
 
@@ -174,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     isLoading = true;
                     currentPage++;
 
-                    sharedMarvelViewModel.setResults(OFFSET * (currentPage - 1));
+                    sharedMarvelViewModel.getMoreResults(OFFSET * (currentPage - 1),PAGE_SIZE);
                     progressBar.setVisibility(ProgressBar.VISIBLE);
 
 
