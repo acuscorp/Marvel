@@ -1,3 +1,3 @@
 # Marvel
 
-Well the solution for loading the images is changing the Glide version
+This is an API consumer from https://developer.marvel.com/ it shows a grid with heroes images, their name and a little description
